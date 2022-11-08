@@ -16,7 +16,7 @@ const getUserById = (req, res) => {
   const id = parseInt(req.params.id);
 
   database
-    .query("select * from movies where id = ?", [id])
+    .query("select * from users where id = ?", [id])
     .then(([users]) => {
       if (users[0] != null) {
         res.json(users[0]);
@@ -45,8 +45,31 @@ const postUser = (req, res) => {
       res.status(500).send("Error saving the user");
     });
 };
+const updateUser = (req, res) => {
+  /*const id = parseInt(req.params.id);*/
+  const { firstname, lastname, email, city, language } = req.body;
+  const { id } = req.params;
+
+  database
+    .query(
+      "UPDATE users SET firstname = ?, lastname= ?, email= ?, city = ?, language = ? WHERE id = ?",
+      [firstname, lastname, email, city, language, id]
+    )
+    .then(([result]) => {
+      if (result.affectedRows === 0) {
+        res.status(404).send("Not Found");
+      } else {
+        res.sendStatus(204);
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error editing the user");
+    });
+};
 module.exports = {
   getUsers,
   getUserById,
   postUser,
+  updateUser,
 };
